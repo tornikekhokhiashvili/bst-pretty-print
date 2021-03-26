@@ -8,7 +8,7 @@ It should return a `PrintableTree` instance.
 PrintableTree is a simple Binary Search Tree with no balancing.\
 It may contain int values that are added via `add` method.\
 The main challenge is that it may be pretty printed via `prettyPrint` method.
-It means that all the tree should be converted to a String representing its inner structure from lesser values to greater ones.
+It means that a tree should be converted to a String representing its inner structure from lesser values to greater ones.
 Also, you must use pseudographic symbols to show node connections.
 
 Example:

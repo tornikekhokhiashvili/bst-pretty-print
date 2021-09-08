@@ -1,14 +1,13 @@
 # BST Pretty Print
 
 ## Description 
-Implement [`com.epam.rd.autocode.bstprettyprint.PrintableTree`](src/main/java/com/epam/rd/autocode/bstprettyprint/PrintableTree.java) `getInstance` method.
-
-It should return a `PrintableTree` instance.
+1. Implement [`com.epam.rd.autocode.bstprettyprint.PrintableTree`](src/main/java/com/epam/rd/autocode/bstprettyprint/PrintableTree.java) `getInstance` method.
+1. It should return a `PrintableTree` instance.
 
 PrintableTree is a simple Binary Search Tree with no balancing.\
 It may contain int values that are added via `add` method.\
 The main challenge is that it may be pretty printed via `prettyPrint` method.
-It means that a tree should be converted to a String representing its inner structure from lesser values to greater ones.
+It means that all the tree should be converted to a String representing its inner structure from smaller  values to greater ones.
 Also, you must use pseudographic symbols to show node connections.
 
 Example:

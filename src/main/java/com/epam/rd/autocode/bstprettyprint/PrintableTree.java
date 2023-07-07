@@ -5,7 +5,8 @@ public interface PrintableTree {
     void add(int i);
     String prettyPrint();
 
-    static PrintableTree getInstance() {
-        throw new UnsupportedOperationException();
+     static PrintableTree getInstance() {
+
+        return Tree.getInstance();
     }
 }

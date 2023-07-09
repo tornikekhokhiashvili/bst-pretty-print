@@ -1,103 +1,120 @@
 package com.epam.rd.autocode.bstprettyprint;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Tree implements PrintableTree {
-    public static final Tree instance = new Tree();
+    private List<Node> tree;
+    private Node root;
+    private StringBuilder result;
+
+    private final char LEFT_DOWN = '┌';
+    private final char RIGHT_DOWN = '┐';
+    private final char LEFT_UP = '└';
+    private final char RIGHT_UP = '┘';
+    private final char LINE_LEFT = '┤';
+    private final char LINE = '│';
 
     public Tree() {
-    }
-
-    public static Tree getInstance() {
-        return instance;
+        tree = new ArrayList();
+        result = new StringBuilder("");
     }
 
     @Override
     public void add(int i) {
-        root = addRecursive(root, i);
+        if (tree.size() == 0) {
+            root = new Node(i);
+            tree.add(root);
+        } else {
+            findParents(i, root);
+        }
+    }
+
+    private void findParents(int i, Node node) {
+        if (i > node.getValue()) {
+            if (node.getRightChild() != null) {
+                node = node.getRightChild();
+                findParents(i, node);
+            } else {
+                Node current = new Node(i, node);
+                node.setRightChild(current);
+                current.setParent(node);
+                tree.add(current);
+            }
+        }
+        if (i < node.getValue()) {
+            if (node.getLeftChild() != null) {
+                node = node.getLeftChild();
+                findParents(i, node);
+            } else {
+                Node current = new Node(i, node);
+                node.setLeftChild(current);
+                current.setParent(node);
+                tree.add(current);
+            }
+        }
     }
 
     @Override
     public String prettyPrint() {
-        StringBuilder sb = new StringBuilder();
-        prettyPrintHelper(root, sb, "",true,0);
-        return sb.toString();
-    }
-    private static void printNestedStructure(int depth) {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < depth; i++) {
-            sb.append(" ");
-        }
-
-        if (depth < 10) {
-            sb.append("┌");
-            System.out.println(sb.toString() + depth);
-
-            sb.append("│");
-            printNestedStructure(depth + 1);
-
-            sb.setCharAt(sb.length() - 2, '┤');
-            System.out.println(sb.toString());
-        }
-
-        sb.setCharAt(sb.length() - 2, '└');
-        System.out.println(sb.toString() + (depth + 1));
-    }
-
-    private void prettyPrintHelper(Node node, StringBuilder sb, String indent, boolean isLast, int depth) {
-        if (node == null) {
-            return;
-        }
-
-        if (depth > 0) {
-            sb.append(indent);
-
-            for (int i = 0; i < depth - 1; i++) {
-                sb.append("│  ");
+        Collections.sort(tree, new ValueComparator());
+        List<Integer> drawLine = new ArrayList<>();
+        for (Node node : tree) {
+            StringBuilder currentStr = new StringBuilder();
+            int numberSpaces = sumSpaces(node, 0);
+            for (int i = 0; i < numberSpaces; i++) {
+                currentStr.append(" ");
+            }
+            if (node.getParent() != null) {
+                if (node.getValue() < node.getParent().getValue()) {
+                    drawLine.add(currentStr.length());
+                    currentStr.append(LEFT_DOWN);
+                } else {
+                    currentStr.append(LEFT_UP);
+                }
+            }
+            currentStr.append(node.getValue());
+            if (node.getLeftChild() != null && node.getRightChild() != null) {
+                drawLine.add(currentStr.length());
+                currentStr.append(LINE_LEFT);
+            } else if (node.getLeftChild() != null && node.getRightChild() == null) {
+                currentStr.append(RIGHT_UP);
+            } else if (node.getRightChild() != null && node.getLeftChild() == null) {
+                drawLine.add(currentStr.length());
+                currentStr.append(RIGHT_DOWN);
+            }
+            Iterator<Integer> iterator = drawLine.iterator();
+            while (iterator.hasNext()) {
+                int index = iterator.next();
+                if (currentStr.charAt(index) == ' ') {
+                    currentStr.setCharAt(index, LINE);
+                } else if (currentStr.charAt(index) == LINE_LEFT) {
+                } else if (currentStr.charAt(index) == LEFT_UP || currentStr.charAt(index) == RIGHT_UP) {
+                    iterator.remove();
+                }
             }
 
-            if (isLast) {
-                sb.append("└─");
-                indent += "   ";
-            } else {
-                sb.append("├─");
-                indent += "│  ";
-            }
-
-            sb.append(node.value).append("\n");
-        } else {
-            sb.append(node.value).append("\n");
+            currentStr.append("\n");
+            result.append(currentStr);
         }
-
-        prettyPrintHelper(node.left, sb, indent, false, depth + 1);
-        prettyPrintHelper(node.right, sb, indent, true, depth + 1);
+        return result.toString();
     }
 
-    private Node root;
-
-    private static class Node {
-        int value;
-        Node left;
-        Node right;
-
-        Node(int value) {
-            this.value = value;
+    private int sumSpaces (Node node, int sun) {
+        int sumSpaces = sun;
+        Node parent = null;
+        if (node != root) {
+            parent = node.getParent();
+            String value = String.valueOf(parent.getValue());
+            sumSpaces += value.length() + 1;
+            return sumSpaces(parent, sumSpaces);
         }
+        return sumSpaces - 1;
     }
 
-    private Node addRecursive(Node current, int value) {
-        if (current == null) {
-            return new Node(value);
+    static class ValueComparator implements Comparator<Node> {
+        @Override
+        public int compare(Node o1, Node o2) {
+            return o1.getValue() - o2.getValue();
         }
-
-        if (value < current.value) {
-            current.left = addRecursive(current.left, value);
-        } else if (value > current.value) {
-            current.right = addRecursive(current.right, value);
-        }
-
-        return current;
     }
 }

@@ -7,6 +7,6 @@ public interface PrintableTree {
 
      static PrintableTree getInstance() {
 
-        return Tree.getInstance();
+        return new Tree();
     }
 }

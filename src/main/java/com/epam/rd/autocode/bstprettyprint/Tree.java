@@ -3,9 +3,9 @@ package com.epam.rd.autocode.bstprettyprint;
 import java.util.*;
 
 public class Tree implements PrintableTree {
-    private List<Node> tree;
+    private final List<Node> tree;
     private Node root;
-    private StringBuilder result;
+    private final StringBuilder result;
 
     private final char LEFT_DOWN = '┌';
     private final char RIGHT_DOWN = '┐';
@@ -16,12 +16,12 @@ public class Tree implements PrintableTree {
 
     public Tree() {
         tree = new ArrayList();
-        result = new StringBuilder("");
+        result = new StringBuilder();
     }
 
     @Override
     public void add(int i) {
-        if (tree.size() == 0) {
+        if (tree.isEmpty()) {
             root = new Node(i);
             tree.add(root);
         } else {
@@ -56,7 +56,7 @@ public class Tree implements PrintableTree {
 
     @Override
     public String prettyPrint() {
-        Collections.sort(tree, new ValueComparator());
+        tree.sort(new ValueComparator());
         List<Integer> drawLine = new ArrayList<>();
         for (Node node : tree) {
             StringBuilder currentStr = new StringBuilder();
@@ -101,7 +101,7 @@ public class Tree implements PrintableTree {
 
     private int sumSpaces (Node node, int sun) {
         int sumSpaces = sun;
-        Node parent = null;
+        Node parent;
         if (node != root) {
             parent = node.getParent();
             String value = String.valueOf(parent.getValue());
